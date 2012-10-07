@@ -3,7 +3,7 @@ var Sburb = (function(Sburb) {
 	// //////////////////////////////////
 	// Minesweeper Class
 	// Copyright (c) 2012, Volker Schuller
-	// Same licensing terms as in README-ownership-liscensing.txt
+	// Same licensing terms as in README.md
 	// //////////////////////////////////
 
 	Minesweeper = function(width, heigth, number) {
@@ -162,20 +162,20 @@ var Sburb = (function(Sburb) {
 			else
 				item.depthing = 2;
 			if(!newAction)
-				newAction = lastAction = new Sburb.Action("waitFor","played,"+chest.name,null,null,null,null,null,1,true);
+				newAction = lastAction = new Sburb.Action("waitFor","played,"+chest.name);
 			else
-				lastAction.followUp = new Sburb.Action("waitFor","played,"+chest.name,null,null,null,null,null,1,true);
-			lastAction = lastAction.followUp = new Sburb.Action("addSprite",item.name+","+Sburb.curRoom.name,null,null,null,true,true,1,true);
-			lastAction = lastAction.followUp = new Sburb.Action("moveSprite",item.name+","+chest.x+","+(chest.y-35),null,null,null,true,true,1,true);
+				lastAction.followUp = new Sburb.Action("waitFor","played,"+chest.name);
+			lastAction = lastAction.followUp = new Sburb.Action("addSprite",item.name+","+Sburb.curRoom.name,null,null,null,true,true);
+			lastAction = lastAction.followUp = new Sburb.Action("moveSprite",item.name+","+chest.x+","+(chest.y-35),null,null,null,true,true);
 			lastAction = lastAction.followUp = new Sburb.Action("deltaSprite",item.name+",0,-8",null,null,null,true,null,5);
-			lastAction = lastAction.followUp = new Sburb.Action("removeSprite",chest.name+","+Sburb.curRoom.name,null,null,null,true,true,1,true);
+			lastAction = lastAction.followUp = new Sburb.Action("removeSprite",chest.name+","+Sburb.curRoom.name,null,null,null,true,true);
 			var flag = Sburb.sprites[prefix+"_flag"+x+"_"+y];
 			if(flag)
-				lastAction = lastAction.followUp = new Sburb.Action("removeSprite",flag.name+","+Sburb.curRoom.name,null,null,null,true,true,1,true);
+				lastAction = lastAction.followUp = new Sburb.Action("removeSprite",flag.name+","+Sburb.curRoom.name,null,null,null,true,true);
 			lastAction = lastAction.followUp = new Sburb.Action("deltaSprite",item.name+",0,12",null,null,null,true,null,8);
-			lastAction = lastAction.followUp = new Sburb.Action("changeDepthing",item.name+",0",null,null,null,true,null,1,true);
+			lastAction = lastAction.followUp = new Sburb.Action("depthSprite",item.name+",0",null,null,null,true,null,1);
 			if(Sburb.assets["itemGetSound"]){
-				lastAction = lastAction.followUp = new Sburb.Action("playSound","itemGetSound",null,null,null,true,null,1,true);
+				lastAction = lastAction.followUp = new Sburb.Action("playSound","itemGetSound",null,null,null,true,null,1);
 			}
 			if(number==-1) {
 				loose=true;
@@ -185,11 +185,9 @@ var Sburb = (function(Sburb) {
 		}
 		if((!loose)&&Sburb.sweeper[prefix].isWon()) {
 		    var dom=new DOMParser().parseFromString(onWin,"text/xml").documentElement;
-			lastAction = lastAction.followUp = Sburb.parseAction(dom);
+			lastAction.followUp = Sburb.parseAction(dom);
 		}
-		while(lastAction.followUp)
-			lastAction=lastAction.followUp;
-		Sburb.curAction.followUp = newAction;
+		Sburb.performActionParallel(newAction);
 	}
 
 	Sburb.commands.markMineChest = function(info) {
@@ -210,11 +208,6 @@ var Sburb = (function(Sburb) {
 			chest.removeAction("unmark");
 			chest.addAction(new Sburb.Action("markMineChest",prefix+","+cx+","+cy+",true","mark",null,null,true,true,1,null,true));
 		}
-	}
-
-	Sburb.commands.changeDepthing = function(info){
-		var params = info.split(",");
-		Sburb.sprites[params[0].trim()].depthing=parseInt(params[1]);
 	}
 
 	Sburb.Sprite.prototype.clone = function(newname) {
