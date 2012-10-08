@@ -139,20 +139,20 @@ var Sburb = (function(Sburb) {
 				chest.startAnimation("open");
 				if(Sburb.assets["openSound"]){
 					if(!newAction) {
-						newAction = lastAction = new Sburb.Action("playSound","openSound",null,null,null,true,null,1,true);
-						lastAction = lastAction.followUp = new Sburb.Action("waitFor","played,"+chest.name,null,null,null,null,null,1,true);
+						newAction = lastAction = new Sburb.Action("playSound","openSound",null,null,null,true,null,1,false,true);
+						lastAction = lastAction.followUp = new Sburb.Action("waitFor","played,"+chest.name);
 					}
 				}
 			}
 			chest.removeAction(Sburb.curAction.name);
 			if(number==0) {
 				if(!newAction)
-					newAction = lastAction = new Sburb.Action("removeSprite",chest.name+","+Sburb.curRoom.name,null,null,null,true,true,1,true);
+					newAction = lastAction = new Sburb.Action("removeSprite",chest.name+","+Sburb.curRoom.name,null,null,null,true,true,1,false,true);
 				else
-					lastAction = lastAction.followUp = new Sburb.Action("removeSprite",chest.name+","+Sburb.curRoom.name,null,null,null,true,true,1,true);
+					lastAction = lastAction.followUp = new Sburb.Action("removeSprite",chest.name+","+Sburb.curRoom.name,null,null,null,true,true);
 				var flag = Sburb.sprites[prefix+"_flag"+x+"_"+y];
 				if(flag)
-					lastAction = lastAction.followUp = new Sburb.Action("removeSprite",flag.name+","+Sburb.curRoom.name,null,null,null,true,true,1,true);
+					lastAction = lastAction.followUp = new Sburb.Action("removeSprite",flag.name+","+Sburb.curRoom.name,null,null,null,true,true);
 				continue;
 			}
 			var item = Sburb.sprites[(number==-1)?mine:("nr"+number)].clone("minesweep"+x+"_"+y);
@@ -167,15 +167,15 @@ var Sburb = (function(Sburb) {
 				lastAction.followUp = new Sburb.Action("waitFor","played,"+chest.name);
 			lastAction = lastAction.followUp = new Sburb.Action("addSprite",item.name+","+Sburb.curRoom.name,null,null,null,true,true);
 			lastAction = lastAction.followUp = new Sburb.Action("moveSprite",item.name+","+chest.x+","+(chest.y-35),null,null,null,true,true);
-			lastAction = lastAction.followUp = new Sburb.Action("deltaSprite",item.name+",0,-8",null,null,null,true,null,5);
+			lastAction = lastAction.followUp = new Sburb.Action("deltaSprite",item.name+",0,-8",null,null,null,true,false,5);
 			lastAction = lastAction.followUp = new Sburb.Action("removeSprite",chest.name+","+Sburb.curRoom.name,null,null,null,true,true);
 			var flag = Sburb.sprites[prefix+"_flag"+x+"_"+y];
 			if(flag)
 				lastAction = lastAction.followUp = new Sburb.Action("removeSprite",flag.name+","+Sburb.curRoom.name,null,null,null,true,true);
-			lastAction = lastAction.followUp = new Sburb.Action("deltaSprite",item.name+",0,12",null,null,null,true,null,8);
-			lastAction = lastAction.followUp = new Sburb.Action("depthSprite",item.name+",0",null,null,null,true,null,1);
+			lastAction = lastAction.followUp = new Sburb.Action("deltaSprite",item.name+",0,12",null,null,null,true,false,8);
+			lastAction = lastAction.followUp = new Sburb.Action("depthSprite",item.name+",0",null,null,null,true);
 			if(Sburb.assets["itemGetSound"]){
-				lastAction = lastAction.followUp = new Sburb.Action("playSound","itemGetSound",null,null,null,true,null,1);
+				lastAction = lastAction.followUp = new Sburb.Action("playSound","itemGetSound",null,null,null,true);
 			}
 			if(number==-1) {
 				loose=true;
@@ -187,7 +187,7 @@ var Sburb = (function(Sburb) {
 		    var dom=new DOMParser().parseFromString(onWin,"text/xml").documentElement;
 			lastAction.followUp = Sburb.parseAction(dom);
 		}
-		Sburb.performActionParallel(newAction);
+		Sburb.performAction(newAction);
 	}
 
 	Sburb.commands.markMineChest = function(info) {
@@ -202,11 +202,11 @@ var Sburb = (function(Sburb) {
 			flag.x=chest.x+30;
 			flag.y=chest.y;
 			chest.removeAction("mark");
-			chest.addAction(new Sburb.Action("markMineChest",prefix+","+cx+","+cy+",false","unmark",null,null,true,null,1,null,true));
+			chest.addAction(new Sburb.Action("markMineChest",prefix+","+cx+","+cy+",false","unmark",null,null,true,true,1,false,true));
 		} else {
 			Sburb.curRoom.removeSprite(Sburb.sprites[prefix+"_flag"+cx+"_"+cy]);
 			chest.removeAction("unmark");
-			chest.addAction(new Sburb.Action("markMineChest",prefix+","+cx+","+cy+",true","mark",null,null,true,true,1,null,true));
+			chest.addAction(new Sburb.Action("markMineChest",prefix+","+cx+","+cy+",true","mark",null,null,true,true,1,false,true));
 		}
 	}
 
