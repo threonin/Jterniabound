@@ -139,7 +139,7 @@ var Sburb = (function(Sburb) {
 				chest.startAnimation("open");
 				if(Sburb.assets["openSound"]){
 					if(!newAction) {
-						newAction = lastAction = new Sburb.Action("playSound","openSound",null,null,null,true,null,1,false,true);
+						newAction = lastAction = new Sburb.Action("playSound","openSound",null,null,null,true,false,1,false,true);
 						lastAction = lastAction.followUp = new Sburb.Action("waitFor","played,"+chest.name);
 					}
 				}
@@ -155,25 +155,22 @@ var Sburb = (function(Sburb) {
 					lastAction = lastAction.followUp = new Sburb.Action("removeSprite",flag.name+","+Sburb.curRoom.name,null,null,null,true,true);
 				continue;
 			}
-			var item = Sburb.sprites[(number==-1)?mine:("nr"+number)].clone("minesweep"+x+"_"+y);
-			item.collidable=false;
-			if(Sburb.char.y>chest.y)
-				item.depthing = 1;
-			else
-				item.depthing = 2;
+			var itemname="minesweep"+x+"_"+y;
 			if(!newAction)
-				newAction = lastAction = new Sburb.Action("waitFor","played,"+chest.name);
+				newAction = lastAction = new Sburb.Action("waitFor","played,"+chest.name,null,null,null,false,false,1,false,true);
 			else
 				lastAction.followUp = new Sburb.Action("waitFor","played,"+chest.name);
-			lastAction = lastAction.followUp = new Sburb.Action("addSprite",item.name+","+Sburb.curRoom.name,null,null,null,true,true);
-			lastAction = lastAction.followUp = new Sburb.Action("moveSprite",item.name+","+chest.x+","+(chest.y-35),null,null,null,true,true);
-			lastAction = lastAction.followUp = new Sburb.Action("deltaSprite",item.name+",0,-8",null,null,null,true,false,5);
+			lastAction = lastAction.followUp = new Sburb.Action("cloneSprite",((number==-1)?mine:("nr"+number))+","+itemname,null,null,null,true,true);
+			lastAction = lastAction.followUp = new Sburb.Action("depthSprite",itemname+((Sburb.char.y>chest.y)?",2":",1"),null,null,null,true,true);
+			lastAction = lastAction.followUp = new Sburb.Action("addSprite",itemname+","+Sburb.curRoom.name,null,null,null,true,true);
+			lastAction = lastAction.followUp = new Sburb.Action("moveSprite",itemname+","+chest.x+","+(chest.y-35),null,null,null,true,true);
+			lastAction = lastAction.followUp = new Sburb.Action("deltaSprite",itemname+",0,-8",null,null,null,true,false,5);
 			lastAction = lastAction.followUp = new Sburb.Action("removeSprite",chest.name+","+Sburb.curRoom.name,null,null,null,true,true);
 			var flag = Sburb.sprites[prefix+"_flag"+x+"_"+y];
 			if(flag)
 				lastAction = lastAction.followUp = new Sburb.Action("removeSprite",flag.name+","+Sburb.curRoom.name,null,null,null,true,true);
-			lastAction = lastAction.followUp = new Sburb.Action("deltaSprite",item.name+",0,12",null,null,null,true,false,8);
-			lastAction = lastAction.followUp = new Sburb.Action("depthSprite",item.name+",0",null,null,null,true);
+			lastAction = lastAction.followUp = new Sburb.Action("deltaSprite",itemname+",0,12",null,null,null,true,false,8);
+			lastAction = lastAction.followUp = new Sburb.Action("depthSprite",itemname+",0",null,null,null,true);
 			if(Sburb.assets["itemGetSound"]){
 				lastAction = lastAction.followUp = new Sburb.Action("playSound","itemGetSound",null,null,null,true);
 			}
@@ -210,25 +207,5 @@ var Sburb = (function(Sburb) {
 		}
 	}
 
-	Sburb.Sprite.prototype.clone = function(newname) {
-		var newSprite = new Sburb.Sprite(newname,this.x,this.y,this.width,this.height,this.dx,this.dy,this.depthing,this.collidable);
-		for(var anim in this.animations) {
-			if(this.animations.hasOwnProperty(anim)) {
-				newSprite.addAnimation(this.animations[anim].clone());
-			}
-		}
-		for(var action in this.actions) {
-			if(this.actions.hasOwnProperty(action)) {
-				newSprite.addAction(this.actions[action].clone());
-			}
-		}
-		newSprite.startAnimation(this.animation.name);
-		Sburb.sprites[newname]=newSprite;
-		return newSprite;
-	}
-
-	Sburb.Animation.prototype.clone = function() {
-		return new Sburb.Animation(this.name,this.sheet,this.x,this.y,this.colSize,this.rowSize,this.startPos,this.length,this.frameInterval,this.loopNum,this.followUp,this.flipX,this.flipY);
-	}
 	return Sburb;
 })(Sburb || {});
