@@ -102,8 +102,8 @@ var Sburb = (function(Sburb) {
 		for(var r=0;r<rows;r++) {
 			for(var c=0;c<cols;c++) {
 				var newchest=chest.clone(prefix+r+"_"+c);
-				newchest.actions[0].info=prefix+","+r+","+c+","+mine+","+onWin+","+onLoose;
-				newchest.actions[1].info=prefix+","+r+","+c+",true";
+				newchest.actions[0]._info=prefix+","+r+","+c+","+mine+","+onWin+","+onLoose;
+				newchest.actions[1]._info=prefix+","+r+","+c+",true";
 				newAction = lastAction = new Sburb.Action("addSprite",newchest.name+","+Sburb.curRoom.name,null,null,null,true);
 				lastAction = lastAction.followUp = new Sburb.Action("moveSprite",newchest.name+","+(x+r*dx)+","+(y+c*dy),null,null,null,true,true);
 				Sburb.performAction(newAction);
